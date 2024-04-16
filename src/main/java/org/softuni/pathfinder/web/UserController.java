@@ -1,4 +1,4 @@
-package org.softuni.pathfinder.controller;
+package org.softuni.pathfinder.web;
 
 import org.softuni.pathfinder.Service.UserService;
 import org.softuni.pathfinder.model.entity.User;
