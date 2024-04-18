@@ -1,6 +1,7 @@
 package org.softuni.pathfinder.Service;
 
 import org.softuni.pathfinder.model.dto.UserLoginDTO;
+import org.softuni.pathfinder.model.dto.UserRegisterDTO;
 import org.softuni.pathfinder.model.entity.User;
 import org.softuni.pathfinder.repository.UserRepository;
 import org.softuni.pathfinder.util.CurrentUser;
@@ -44,5 +45,38 @@ public class UserServiceImpl implements UserService {
                 .setFullName(user.get().getFullName());
 
         return isLoginSuccessful;
+    }
+
+    @Override
+    public boolean registerUser(UserRegisterDTO userRegisterDTO) {
+        boolean isRegisterSuccessful = false;
+
+        Optional<User> user = userRepository.findByUsername(userRegisterDTO.username());
+
+        if (user.isPresent() || !userRegisterDTO.password().equals(userRegisterDTO.confirmPassword())) {
+            return isRegisterSuccessful;
+        }
+
+        userRepository.save(map(userRegisterDTO));
+        isRegisterSuccessful = true;
+
+        return isRegisterSuccessful;
+    }
+
+    @Override
+    public void logoutUser() {
+        currentUser.logout();
+    }
+
+    private User map(UserRegisterDTO userRegisterDTO) {
+        User user = new User();
+
+        user.setUsername(userRegisterDTO.username());
+        user.setFullName(userRegisterDTO.fullName());
+        user.setEmail(userRegisterDTO.email());
+        user.setAge(userRegisterDTO.age());
+        user.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
+
+        return user;
     }
 }

@@ -23,6 +23,13 @@ public class UserLoginController {
 
     @PostMapping("/login")
     public String login(UserLoginDTO userLoginDTO) {
-        return userService.loginUser(userLoginDTO) ? "index" : "login";
+        return userService.loginUser(userLoginDTO) ? "redirect:/" : "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        userService.logoutUser();
+
+        return "redirect:/";
     }
 }
