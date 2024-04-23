@@ -5,6 +5,7 @@ import org.softuni.pathfinder.model.dto.UserRegisterDTO;
 import org.softuni.pathfinder.model.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     List<User> getAll();
@@ -14,4 +15,6 @@ public interface UserService {
     boolean registerUser(UserRegisterDTO userRegisterDTO);
 
     void logoutUser();
+
+    Optional<User> getByUsername(String username);
 }

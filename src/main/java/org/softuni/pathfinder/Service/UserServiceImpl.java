@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
         isLoginSuccessful = true;
 
         currentUser.setLogged(true)
+                .setUsername(user.get().getUsername())
                 .setFullName(user.get().getFullName());
 
         return isLoginSuccessful;
@@ -66,6 +67,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logoutUser() {
         currentUser.logout();
+    }
+
+    @Override
+    public Optional<User> getByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     private User map(UserRegisterDTO userRegisterDTO) {

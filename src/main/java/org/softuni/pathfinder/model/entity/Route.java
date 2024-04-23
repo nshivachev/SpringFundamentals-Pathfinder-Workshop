@@ -2,18 +2,21 @@ package org.softuni.pathfinder.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.softuni.pathfinder.model.enums.Level;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "routes")
 public class Route extends BaseEntity {
+
+    public Route() {
+        this.categories = new HashSet<>();
+    }
 
     @Column(columnDefinition = "text")
     private String description;
@@ -35,4 +38,8 @@ public class Route extends BaseEntity {
 
     @ManyToMany
     private Set<Category> categories;
+
+    public void addCategories(Set<Category> categories) {
+        this.categories.addAll(categories);
+    }
 }
