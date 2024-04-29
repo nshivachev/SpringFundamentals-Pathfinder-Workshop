@@ -6,6 +6,7 @@ import org.softuni.pathfinder.model.enums.CategoryNames;
 import org.softuni.pathfinder.model.enums.Level;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,8 +42,17 @@ public class RoutesController {
     @GetMapping()
     public ModelAndView routes() {
 
-        ModelAndView modelAndView = new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView("routes");
         modelAndView.addObject("routes", routeService.getAllRoutes());
+
+        return modelAndView;
+    }
+
+    @GetMapping("/details/{id}")
+    public ModelAndView routeDetails(@PathVariable("id") Long id) {
+
+        ModelAndView modelAndView = new ModelAndView("route-details");
+        modelAndView.addObject("route", routeService.getRouteDetails(id));
 
         return modelAndView;
     }

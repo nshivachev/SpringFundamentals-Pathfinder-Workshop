@@ -1,6 +1,8 @@
 package org.softuni.pathfinder.Service;
 
+import org.softuni.pathfinder.exceptions.RouteNotFoundException;
 import org.softuni.pathfinder.model.dto.RouteAddDTO;
+import org.softuni.pathfinder.model.dto.RouteDetailsDTO;
 import org.softuni.pathfinder.model.dto.RouteGetAllDTO;
 import org.softuni.pathfinder.model.entity.Route;
 import org.softuni.pathfinder.repository.CategoryRepository;
@@ -31,7 +33,13 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public List<RouteGetAllDTO> getAllRoutes() {
-        return routeRepository.findAll().stream().map(this::map).toList();
+        return routeRepository.findAll().stream().map(this::maToRouteGetAllDTO).toList();
+    }
+
+    @Override
+    public RouteDetailsDTO getRouteDetails(Long id) {
+        return mapToRouteDetailsDTO(routeRepository.findById(id)
+                .orElseThrow(() -> new RouteNotFoundException(String.format("Route with id %d is not found", id))));
     }
 
     private Route map(RouteAddDTO routeAddDTO) {
@@ -49,7 +57,18 @@ public class RouteServiceImpl implements RouteService {
         return route;
     }
 
-    private RouteGetAllDTO map(Route route) {
+    private RouteGetAllDTO maToRouteGetAllDTO(Route route) {
         return new RouteGetAllDTO(route.getId(), route.getImageUrl(), route.getName(), route.getDescription());
+    }
+
+    private RouteDetailsDTO mapToRouteDetailsDTO(Route route) {
+        return new RouteDetailsDTO(
+                route.getId(),
+                route.getName(),
+                route.getLevel(),
+                route.getDescription(),
+                route.getVideoUrl(),
+                route.getAuthor().getUsername()
+        );
     }
 }
