@@ -5,6 +5,9 @@ import org.softuni.pathfinder.model.dto.UserLoginDTO;
 import org.softuni.pathfinder.model.dto.UserProfileDTO;
 import org.softuni.pathfinder.model.dto.UserRegisterDTO;
 import org.softuni.pathfinder.model.entity.User;
+import org.softuni.pathfinder.model.enums.Level;
+import org.softuni.pathfinder.model.enums.UserRoles;
+import org.softuni.pathfinder.repository.RoleRepository;
 import org.softuni.pathfinder.repository.UserRepository;
 import org.softuni.pathfinder.util.CurrentUser;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,17 +15,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CurrentUser currentUser;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CurrentUser currentUser) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, CurrentUser currentUser, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.currentUser = currentUser;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -92,6 +98,8 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userRegisterDTO.email());
         user.setAge(userRegisterDTO.age());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
+        user.setLevel(Level.BEGINNER);
+        user.setRoles(Set.of(roleRepository.findByName(UserRoles.USER).orElseThrow(IllegalArgumentException::new)));
 
         return user;
     }

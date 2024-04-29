@@ -39,7 +39,11 @@ public class RoutesController {
     }
 
     @GetMapping()
-    public String routes() {
-        return "routes";
+    public ModelAndView routes() {
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("routes", routeService.getAllRoutes());
+
+        return modelAndView;
     }
 }

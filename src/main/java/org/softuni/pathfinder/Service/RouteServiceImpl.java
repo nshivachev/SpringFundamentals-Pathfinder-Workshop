@@ -1,11 +1,14 @@
 package org.softuni.pathfinder.Service;
 
 import org.softuni.pathfinder.model.dto.RouteAddDTO;
+import org.softuni.pathfinder.model.dto.RouteGetAllDTO;
 import org.softuni.pathfinder.model.entity.Route;
 import org.softuni.pathfinder.repository.CategoryRepository;
 import org.softuni.pathfinder.repository.RouteRepository;
 import org.softuni.pathfinder.util.CurrentUser;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -26,7 +29,12 @@ public class RouteServiceImpl implements RouteService {
         routeRepository.save(map(routeAddDTO));
     }
 
-    public Route map(RouteAddDTO routeAddDTO) {
+    @Override
+    public List<RouteGetAllDTO> getAllRoutes() {
+        return routeRepository.findAll().stream().map(this::map).toList();
+    }
+
+    private Route map(RouteAddDTO routeAddDTO) {
         Route route = new Route();
         route.setName(routeAddDTO.name());
         route.setDescription(routeAddDTO.description());
@@ -39,5 +47,9 @@ public class RouteServiceImpl implements RouteService {
         }
 
         return route;
+    }
+
+    private RouteGetAllDTO map(Route route) {
+        return new RouteGetAllDTO(route.getId(), route.getImageUrl(), route.getName(), route.getDescription());
     }
 }
