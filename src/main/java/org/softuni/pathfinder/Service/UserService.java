@@ -1,6 +1,7 @@
 package org.softuni.pathfinder.Service;
 
 import org.softuni.pathfinder.model.dto.UserLoginDTO;
+import org.softuni.pathfinder.model.dto.UserProfileDTO;
 import org.softuni.pathfinder.model.dto.UserRegisterDTO;
 import org.softuni.pathfinder.model.entity.User;
 
@@ -17,4 +18,8 @@ public interface UserService {
     void logoutUser();
 
     Optional<User> getByUsername(String username);
+
+    UserProfileDTO getUserProfile();
+
+
 }

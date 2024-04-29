@@ -1,6 +1,8 @@
 package org.softuni.pathfinder.Service;
 
+import org.softuni.pathfinder.exceptions.UserNotFoundException;
 import org.softuni.pathfinder.model.dto.UserLoginDTO;
+import org.softuni.pathfinder.model.dto.UserProfileDTO;
 import org.softuni.pathfinder.model.dto.UserRegisterDTO;
 import org.softuni.pathfinder.model.entity.User;
 import org.softuni.pathfinder.repository.UserRepository;
@@ -74,6 +76,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
+    public UserProfileDTO getUserProfile() {
+        User user = userRepository.findByUsername(currentUser.getUsername())
+                .orElseThrow(() -> new UserNotFoundException(String.format("User %s not found", currentUser.getUsername())));
+
+        return map(user);
+    }
+
     private User map(UserRegisterDTO userRegisterDTO) {
         User user = new User();
 
@@ -84,5 +94,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
 
         return user;
+    }
+
+    private UserProfileDTO map(User user) {
+        return new UserProfileDTO(user.getFullName(), user.getUsername(), user.getAge(), user.getLevel());
     }
 }
