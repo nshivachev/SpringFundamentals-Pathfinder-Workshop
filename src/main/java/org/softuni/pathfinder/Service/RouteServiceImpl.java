@@ -11,6 +11,8 @@ import org.softuni.pathfinder.util.CurrentUser;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -44,14 +46,22 @@ public class RouteServiceImpl implements RouteService {
 
     private Route map(RouteAddDTO routeAddDTO) {
         Route route = new Route();
-        route.setName(routeAddDTO.name());
-        route.setDescription(routeAddDTO.description());
-        route.setGpxCoordinates(routeAddDTO.gpxCoordinates());
-        route.setVideoUrl(routeAddDTO.videoUrl());
-        route.setLevel(routeAddDTO.level());
+
+        route.setName(routeAddDTO.getName());
+        route.setDescription(routeAddDTO.getDescription());
+//        route.setGpxCoordinates(routeAddDTO.getGpxCoordinates());
         route.setAuthor(userService.getByUsername(currentUser.getUsername()).orElseThrow(IllegalArgumentException::new));
-        if (null != routeAddDTO.categories()) {
-            route.addCategories(categoryRepository.findByNameIn(routeAddDTO.categories()));
+        route.setLevel(routeAddDTO.getLevel());
+
+        Pattern compile = Pattern.compile("v=(.*)");
+        Matcher matcher = compile.matcher(routeAddDTO.getVideoUrl());
+
+        if (matcher.find()) {
+            route.setVideoUrl(matcher.group(1));
+        }
+
+        if (null != routeAddDTO.getCategories()) {
+            route.addCategories(categoryRepository.findByNameIn(routeAddDTO.getCategories()));
         }
 
         return route;
@@ -65,7 +75,7 @@ public class RouteServiceImpl implements RouteService {
         return new RouteDetailsDTO(
                 route.getId(),
                 route.getName(),
-                route.getLevel(),
+                route.getLevel().toString(),
                 route.getDescription(),
                 route.getVideoUrl(),
                 route.getAuthor().getUsername()

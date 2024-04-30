@@ -1,19 +1,29 @@
 package org.softuni.pathfinder.web;
 
+import jakarta.validation.Valid;
 import org.softuni.pathfinder.Service.RouteService;
 import org.softuni.pathfinder.model.dto.RouteAddDTO;
 import org.softuni.pathfinder.model.enums.CategoryNames;
 import org.softuni.pathfinder.model.enums.Level;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/routes")
 public class RoutesController {
+
+    @Value("${binding-result-package}")
+    private String bindingResultPath;
+
+    private final static String DOT = ".";
 
     private final RouteService routeService;
 
@@ -22,7 +32,12 @@ public class RoutesController {
     }
 
     @GetMapping("/add")
-    public ModelAndView addRoute() {
+    public ModelAndView addRoute(Model model) {
+
+        if (!model.containsAttribute("routeAdd")) {
+            model.addAttribute("routeAdd", new RouteAddDTO());
+        }
+
         ModelAndView modelAndView = new ModelAndView("add-route");
 
         modelAndView.addObject("levels", Level.values());
@@ -32,11 +47,26 @@ public class RoutesController {
     }
 
     @PostMapping("/add")
-    public ModelAndView addRoute(RouteAddDTO routeAddDTO) {
+    public ModelAndView addRoute(
+            @Valid RouteAddDTO routeAddDTO,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
 
-        routeService.addRoute(routeAddDTO);
+        ModelAndView modelAndView = new ModelAndView();
 
-        return new ModelAndView("redirect:/");
+        if (bindingResult.hasErrors()) {
+            final String attributeName = "routeAdd";
+
+            redirectAttributes
+                    .addFlashAttribute(attributeName, routeAddDTO)
+                    .addFlashAttribute(bindingResultPath + DOT + attributeName, bindingResult);
+            modelAndView.setViewName("redirect:add");
+        } else {
+            routeService.addRoute(routeAddDTO);
+            modelAndView.setViewName("redirect:/");
+        }
+
+        return modelAndView;
     }
 
     @GetMapping()
